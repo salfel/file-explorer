@@ -1,8 +1,9 @@
 use crate::fs::{get_current_entity, Entity};
 use std::io::{self, prelude::*};
 
+#[derive(Debug)]
 pub struct Navigator {
-    current: Entity,
+    pub current: Entity,
 }
 
 impl Navigator {
@@ -12,7 +13,7 @@ impl Navigator {
         }
     }
 
-    fn update_dir(&mut self) {
+    pub fn update_dir(&mut self) {
         let stdin = io::stdin();
         let mut path = String::new();
         let line = stdin.lock().read_line(&mut path);
@@ -24,9 +25,8 @@ impl Navigator {
         path.remove(path.len() - 1);
 
         if path == ".." {
-            match self.current.parent().take().map(|parent| *parent) {
-                Some(current) => self.current = current,
-                None => (),
+            if let Some(current) = self.current.parent().take().map(|parent| *parent) {
+                self.current = current;
             }
 
             return;
@@ -40,5 +40,9 @@ impl Navigator {
                 break;
             }
         }
+    }
+
+    pub fn entities(&self) -> &Vec<Entity> {
+        &self.current.children
     }
 }
