@@ -43,7 +43,7 @@ impl Entity {
         })
     }
 
-    fn parse_dir(dir: String) -> Vec<Entity> {
+    pub fn parse_dir(dir: String) -> Vec<Entity> {
         let dir = read_dir(dir).expect("couldn't read current directory");
         let mut entities = Vec::new();
 
@@ -57,14 +57,10 @@ impl Entity {
     }
 
     fn get_dir_from_path(path: String) -> String {
-        let mut paths = path.split("/").collect::<Vec<&str>>();
+        let mut paths = path.split('/').collect::<Vec<&str>>();
         if paths.len() >= 2 {
             paths.remove(paths.len() - 1);
         }
         paths.join("/")
     }
-}
-
-pub fn get_current_dir() -> Vec<Entity> {
-    Entity::parse_dir(String::from("."))
 }

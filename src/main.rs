@@ -1,7 +1,9 @@
+use fs::Entity;
+
 mod fs;
 
 fn main() {
-    for entity in fs::get_current_dir() {
+    for entity in Entity::parse_dir(String::from(".")) {
         println!("{}", entity);
     }
 }
