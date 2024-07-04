@@ -1,10 +1,10 @@
-use fs::parse_dir;
+use cli::Writer;
 
-//mod cli;
+mod cli;
 mod fs;
 
 fn main() {
-    for entity in parse_dir(".") {
-        println!("{}", entity);
-    }
+    let mut writer = Writer::new();
+
+    writer.start();
 }

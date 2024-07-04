@@ -1,12 +1,13 @@
+use std::env;
 use std::fmt::{self, Display};
-use std::fs::{read_dir, DirEntry};
+use std::fs::read_dir;
 
 #[derive(Debug)]
 pub struct Entity {
-    path: String,
-    name: String,
-    is_dir: bool,
-    children: Vec<Entity>,
+    pub path: String,
+    pub name: String,
+    pub is_dir: bool,
+    pub children: Vec<Entity>,
 }
 
 impl Display for Entity {
@@ -20,7 +21,38 @@ impl Display for Entity {
 }
 
 impl Entity {
-    fn new(entry: DirEntry) -> Entity {
+    fn new(name: String, path: String, is_dir: bool, children: bool) -> Entity {
+        let children = if children {
+            parse_children(&path)
+        } else {
+            Vec::new()
+        };
+
+        Entity {
+            name,
+            path,
+            is_dir,
+            children,
+        }
+    }
+
+    pub fn parent(&self) -> Option<Box<Entity>> {
+        let (name, path) = trim_path(&self.path);
+        let is_dir = true;
+
+        Some(Box::new(Entity::new(name, path, is_dir, true)))
+    }
+
+    pub fn populate_children(&mut self) {
+        self.children = parse_children(&self.path);
+    }
+}
+
+fn parse_children(path: &str) -> Vec<Entity> {
+    let dir = read_dir(path).expect("couldn't read current dir");
+    let mut entitites = Vec::new();
+
+    for entry in dir.flatten() {
         let name = entry.file_name().to_str().unwrap_or("").to_string();
         let path = entry.path().to_str().unwrap_or(".").to_string();
         let is_dir = match entry.file_type() {
@@ -28,36 +60,28 @@ impl Entity {
             Err(_) => false,
         };
 
-        let children = match is_dir {
-            true => parse_dir(&path),
-            false => Vec::new(),
-        };
-
-        Entity {
-            name,
-            path: trim_path(path),
-            is_dir,
-            children,
-        }
-    }
-}
-
-pub fn parse_dir(path: &str) -> Vec<Entity> {
-    let dir = read_dir(path).expect("couldn't read current dir");
-    let mut entitites = Vec::new();
-
-    for entry in dir.flatten() {
-        entitites.push(Entity::new(entry));
+        entitites.push(Entity::new(name, path, is_dir, false));
     }
 
     entitites
 }
 
-fn trim_path(path: String) -> String {
+pub fn get_current_entity() -> Entity {
+    let path = env::current_dir()
+        .expect("couldn't read current dir")
+        .display()
+        .to_string();
+
+    let (name, _) = trim_path(&path);
+    Entity::new(name, path, true, true)
+}
+
+fn trim_path(path: &str) -> (String, String) {
     let mut segments = path.split('/').collect::<Vec<&str>>();
+    let mut name = String::new();
     if segments.len() >= 2 {
-        segments.remove(segments.len() - 1);
+        name = segments.remove(segments.len() - 1).to_string();
     }
 
-    segments.join("/")
+    (name, segments.join("/"))
 }
