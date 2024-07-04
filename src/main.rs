@@ -1,10 +1,8 @@
-use cli::Writer;
+use navigator::Navigator;
 
-mod cli;
 mod fs;
+mod navigator;
 
 fn main() {
-    let mut writer = Writer::new();
-
-    writer.start();
+    let mut writer = Navigator::new();
 }
