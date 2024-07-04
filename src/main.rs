@@ -1,19 +1,19 @@
+use renderer::Renderer;
 use std::io::Result;
-use std::rc::Rc;
 
-use file_tree::FileTree;
-use navigator::Navigator;
+mod widgets {
+    pub mod file_tree;
+}
 
-mod file_tree;
 mod fs;
 mod navigator;
+mod renderer;
 mod tui;
 
 fn main() -> Result<()> {
     let mut terminal = tui::init()?;
     terminal.clear()?;
-    let navigator = Rc::new(Navigator::new());
-    let app_result = FileTree::new(navigator).run(&mut terminal);
+    let app_result = Renderer::new().run(&mut terminal);
     tui::restore()?;
     app_result
 }
