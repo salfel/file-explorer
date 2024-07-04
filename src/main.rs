@@ -1,9 +1,10 @@
-use fs::Entity;
+use fs::parse_dir;
 
+//mod cli;
 mod fs;
 
 fn main() {
-    for entity in Entity::parse_dir(String::from(".")) {
+    for entity in parse_dir(".") {
         println!("{}", entity);
     }
 }
