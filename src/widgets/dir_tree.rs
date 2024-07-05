@@ -1,6 +1,6 @@
-use std::{borrow::BorrowMut, cmp::Ordering};
+use std::cmp::Ordering;
 
-use crate::{fs::Entity, navigator::Navigator};
+use crate::navigator::Navigator;
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
@@ -10,17 +10,17 @@ use ratatui::{
 };
 
 #[derive(Debug)]
-pub struct FileTree<'a> {
+pub struct DirTree<'a> {
     navigator: &'a mut Navigator,
 }
 
-impl FileTree<'_> {
-    pub fn new(navigator: &mut Navigator) -> FileTree {
-        FileTree { navigator }
+impl DirTree<'_> {
+    pub fn new(navigator: &mut Navigator) -> DirTree {
+        DirTree { navigator }
     }
 }
 
-impl StatefulWidget for FileTree<'_> {
+impl StatefulWidget for DirTree<'_> {
     type State = ListState;
 
     fn render(self, area: Rect, buf: &mut Buffer, state: &mut ListState) {
@@ -35,18 +35,15 @@ impl StatefulWidget for FileTree<'_> {
             }
         });
 
-        let entities = entities.iter().map(|entity| {
-            if entity.is_dir {
-                format!("  {}", entity.name)
-            } else {
-                format!("  {}", entity.name)
-            }
+        let entities = entities.iter().filter_map(|entity| match entity.is_dir {
+            true => Some(entity.name.to_string()),
+            false => None,
         });
 
         let list = List::new(entities)
             .block(Block::bordered().title("File Tree"))
             .highlight_style(Style::default().on_dark_gray())
-            .repeat_highlight_symbol(true)
+            .repeat_highlight_symbol(false)
             .direction(ListDirection::TopToBottom);
 
         list.render(area, buf, state);

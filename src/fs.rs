@@ -36,13 +36,6 @@ impl Entity {
         }
     }
 
-    pub fn parent(&self) -> Option<Box<Entity>> {
-        let (name, path) = trim_path(&self.path);
-        let is_dir = true;
-
-        Some(Box::new(Entity::new(name, path, is_dir, true)))
-    }
-
     pub fn populate_children(&mut self) {
         self.children = parse_children(&self.path);
     }

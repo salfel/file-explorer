@@ -1,5 +1,4 @@
 use crate::fs::{get_current_entity, trim_path, Entity};
-use std::io::{self, prelude::*};
 
 #[derive(Debug)]
 pub struct Navigator {

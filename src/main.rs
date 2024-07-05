@@ -2,7 +2,7 @@ use renderer::Renderer;
 use std::io::Result;
 
 mod widgets {
-    pub mod file_tree;
+    pub mod dir_tree;
 }
 
 mod fs;

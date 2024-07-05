@@ -7,7 +7,7 @@ use ratatui::{
     Frame,
 };
 
-use crate::{navigator::Navigator, tui, widgets::file_tree::FileTree};
+use crate::{navigator::Navigator, tui, widgets::dir_tree::DirTree};
 
 pub struct Renderer {
     navigator: Navigator,
@@ -64,7 +64,7 @@ impl Renderer {
             ])
             .split(frame.size());
 
-        let file_tree = FileTree::new(&mut self.navigator);
+        let file_tree = DirTree::new(&mut self.navigator);
 
         frame.render_stateful_widget(file_tree, layout[0], &mut self.dir_state);
     }
