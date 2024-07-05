@@ -21,7 +21,7 @@ impl Display for Entity {
 }
 
 impl Entity {
-    fn new(name: String, path: String, is_dir: bool, children: bool) -> Entity {
+    pub fn new(name: String, path: String, is_dir: bool, children: bool) -> Entity {
         let children = if children {
             parse_children(&path)
         } else {
@@ -76,7 +76,7 @@ pub fn get_current_entity() -> Entity {
     Entity::new(name, path, true, true)
 }
 
-fn trim_path(path: &str) -> (String, String) {
+pub fn trim_path(path: &str) -> (String, String) {
     let mut segments = path.split('/').collect::<Vec<&str>>();
     let mut name = String::new();
     if segments.len() >= 2 {
