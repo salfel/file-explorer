@@ -3,6 +3,7 @@ use std::io::Result;
 
 mod widgets {
     pub mod dir_tree;
+    pub mod file_tree;
 }
 
 mod fs;

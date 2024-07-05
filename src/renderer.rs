@@ -7,11 +7,17 @@ use ratatui::{
     Frame,
 };
 
-use crate::{navigator::Navigator, tui, widgets::dir_tree::DirTree};
+use crate::{
+    fs::Entity,
+    navigator::Navigator,
+    tui,
+    widgets::{dir_tree::DirTree, file_tree::FileTree},
+};
 
 pub struct Renderer {
     navigator: Navigator,
     dir_state: ListState,
+    file_state: ListState,
     exit: bool,
 }
 
@@ -21,6 +27,7 @@ impl Renderer {
         Renderer {
             navigator,
             dir_state: ListState::default(),
+            file_state: ListState::default(),
             exit: false,
         }
     }
@@ -64,9 +71,29 @@ impl Renderer {
             ])
             .split(frame.size());
 
-        let file_tree = DirTree::new(&mut self.navigator);
+        let dir_tree = DirTree::new(&mut self.navigator);
+        frame.render_stateful_widget(dir_tree, layout[0], &mut self.dir_state);
 
-        frame.render_stateful_widget(file_tree, layout[0], &mut self.dir_state);
+        let binding = &mut Vec::new();
+
+        let idx = self.dir_state.selected();
+        let children = if let Some(idx) = idx {
+            let entity = self.navigator.entities().get_mut(idx);
+
+            if let Some(entity) = entity {
+                &mut entity.children
+            } else {
+                binding
+            }
+        } else {
+            binding
+        };
+
+        println!("{}", children.len());
+
+        let file_tree = FileTree::new(children);
+
+        frame.render_stateful_widget(file_tree, layout[1], &mut self.file_state)
     }
 
     fn select_entity(&mut self) {
