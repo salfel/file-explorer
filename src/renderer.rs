@@ -8,7 +8,6 @@ use ratatui::{
 };
 
 use crate::{
-    fs::Entity,
     navigator::Navigator,
     tui,
     widgets::{dir_tree::DirTree, file_tree::FileTree},
@@ -81,6 +80,7 @@ impl Renderer {
             let entity = self.navigator.entities().get_mut(idx);
 
             if let Some(entity) = entity {
+                entity.populate_children();
                 &mut entity.children
             } else {
                 binding
@@ -88,8 +88,6 @@ impl Renderer {
         } else {
             binding
         };
-
-        println!("{}", children.len());
 
         let file_tree = FileTree::new(children);
 
