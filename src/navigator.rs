@@ -1,4 +1,4 @@
-use crate::fs::{get_current_entity, trim_path, Entity};
+use crate::entity::{get_current_entity, Entity};
 
 #[derive(Debug)]
 pub struct Navigator {
@@ -7,28 +7,15 @@ pub struct Navigator {
 
 impl Navigator {
     pub fn new() -> Navigator {
-        let mut navigator = Navigator {
+        Navigator {
             current: get_current_entity(),
-        };
-
-        navigator.add_parent();
-
-        navigator
+        }
     }
 
     pub fn update_dir(&mut self, idx: usize) {
-        let mut entity = self.current.children.remove(idx);
-        entity.populate_children();
+        let entity = self.current.children.remove(idx);
         self.current = entity;
-        self.add_parent();
-    }
-
-    fn add_parent(&mut self) {
-        let (_, path) = trim_path(&self.current.path);
-
-        let parent = Entity::new(String::from(".."), path, true, false);
-
-        self.current.children.insert(0, parent);
+        self.current.parse_relatives();
     }
 
     pub fn entities(&mut self) -> &mut Vec<Entity> {

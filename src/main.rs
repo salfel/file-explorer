@@ -5,7 +5,7 @@ mod widgets {
     pub mod file_tree;
 }
 
-mod fs;
+mod entity;
 mod navigator;
 mod renderer;
 mod tui;
