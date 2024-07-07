@@ -3,6 +3,7 @@ use std::io::Result;
 
 mod widgets {
     pub mod file_tree;
+    pub mod preview;
 }
 
 mod entity;

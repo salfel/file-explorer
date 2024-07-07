@@ -7,7 +7,11 @@ use ratatui::{
     Frame,
 };
 
-use crate::{navigator::Navigator, tui, widgets::file_tree::FileTree};
+use crate::{
+    navigator::Navigator,
+    tui,
+    widgets::{file_tree::FileTree, preview::Previewer},
+};
 
 pub struct Renderer {
     navigator: Navigator,
@@ -57,15 +61,19 @@ impl Renderer {
     pub fn render_frame(&mut self, frame: &mut Frame) {
         let layout = Layout::default()
             .direction(Direction::Horizontal)
-            .constraints(vec![
-                Constraint::Ratio(1, 3),
-                Constraint::Ratio(1, 3),
-                Constraint::Ratio(1, 3),
-            ])
+            .constraints(vec![Constraint::Ratio(1, 2); 2])
             .split(frame.size());
 
         let file_tree = FileTree::new(&mut self.navigator);
         frame.render_stateful_widget(file_tree, layout[0], &mut self.dir_state);
+
+        let idx = self.dir_state.selected();
+        if let Some(idx) = idx {
+            if let Some(entity) = self.navigator.current.children.get_mut(idx) {
+                let previewer = Previewer::new(entity);
+                frame.render_widget(previewer, layout[1]);
+            }
+        }
     }
 
     fn select_entity(&mut self) {

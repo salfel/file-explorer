@@ -2,7 +2,7 @@ use crate::entity::{get_current_entity, Entity};
 
 #[derive(Debug)]
 pub struct Navigator {
-    current: Entity,
+    pub current: Entity,
 }
 
 impl Navigator {

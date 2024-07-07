@@ -27,7 +27,7 @@ impl StatefulWidget for FileTree<'_> {
         let entities = self.navigator.entities();
         entities.sort_by(|a, b| {
             if a.is_dir && b.is_dir {
-                a.name.cmp(&b.name)
+                a.file_name.to_string().cmp(&b.file_name.to_string())
             } else if a.is_dir && !b.is_dir {
                 Ordering::Less
             } else {
@@ -35,7 +35,7 @@ impl StatefulWidget for FileTree<'_> {
             }
         });
 
-        let entities = entities.iter().map(|entity| entity.name.to_string());
+        let entities = entities.iter().map(|entity| entity.file_name.to_string());
 
         let list = List::new(entities)
             .block(Block::bordered().title("Dir Tree"))

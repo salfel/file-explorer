@@ -5,7 +5,7 @@ use std::fs::read_dir;
 #[derive(Debug)]
 pub struct Entity {
     pub path: String,
-    pub name: String,
+    pub file_name: FileName,
     pub is_dir: bool,
     pub children: Vec<Entity>,
 }
@@ -15,7 +15,7 @@ impl Display for Entity {
         write!(
             f,
             "path: {}, name: {}, is_dir: {}",
-            self.path, self.name, self.is_dir
+            self.path, self.file_name, self.is_dir
         )
     }
 }
@@ -23,7 +23,7 @@ impl Display for Entity {
 impl Entity {
     pub fn new(name: String, path: String, is_dir: bool, should_parse_children: bool) -> Entity {
         let mut entity = Entity {
-            name,
+            file_name: FileName::new(name),
             path,
             is_dir,
             children: Vec::new(),
@@ -86,4 +86,39 @@ pub fn trim_path(path: &str) -> (String, String) {
     }
 
     (name, segments.join("/"))
+}
+
+#[derive(Debug)]
+pub struct FileName {
+    pub name: String,
+    pub extension: String,
+}
+
+impl Display for FileName {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.extension.is_empty() {
+            write!(f, "{}", self.name)
+        } else {
+            write!(f, "{}.{}", self.name, self.extension)
+        }
+    }
+}
+
+impl FileName {
+    pub fn new(file_name: String) -> FileName {
+        let mut segments = file_name
+            .split('.')
+            .map(|str| str.to_string())
+            .collect::<Vec<String>>();
+
+        let mut extension = String::new();
+
+        if segments.len() >= 2 {
+            extension = segments.remove(segments.len() - 1);
+        }
+
+        let name = segments.join(".");
+
+        FileName { name, extension }
+    }
 }
